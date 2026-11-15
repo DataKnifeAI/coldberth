@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Enodios — Local Hermes Agent on Your GPU</title>
+  <title>Coldberth — Local Hermes Agent on Your GPU</title>
   <meta name="description" content="Run uncensored agent models on your GPU. Hermes Agent + vLLM. Your machine, your rules — no cloud refusals.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -176,7 +176,7 @@
       background-clip: text;
     }
 
-    .hero-greek {
+    .hero-tagline {
       font-weight: 500;
       color: var(--muted);
       -webkit-text-fill-color: var(--muted);
@@ -667,7 +667,7 @@
     <nav>
       <a class="logo" href="#">
         <span class="logo-icon">Ε</span>
-        Enodios
+        Coldberth
       </a>
       <div class="nav-links">
         <a href="#philosophy">Philosophy</a>
@@ -677,8 +677,8 @@
         <a href="#hermes-wizard">Hermes wizard</a>
         <a href="#quickstart">Quick start</a>
         <a href="#commands">Commands</a>
-        <a href="https://github.com/DataKnifeAI/enodios/blob/main/docs/advanced.md">Advanced</a>
-        <a href="https://github.com/DataKnifeAI/enodios">GitHub</a>
+        <a href="https://github.com/DataKnifeAI/coldberth/blob/main/docs/advanced.md">Advanced</a>
+        <a href="https://github.com/DataKnifeAI/coldberth">GitHub</a>
       </div>
     </nav>
 
@@ -689,15 +689,15 @@
       </div>
       <h1>
         Your GPU.<br>Your agent.<br>Your rules.
-        <span class="hero-greek">Ἐνόδιος — Hermes of the road</span>
+        <span class="hero-tagline">Cold dock berth for local inference</span>
       </h1>
       <p class="hero-lead">
-        <strong>Enodios</strong> wires <strong>Hermes Agent</strong> to <strong>vLLM</strong> on your machine —
+        <strong>Coldberth</strong> wires <strong>Hermes Agent</strong> to <strong>vLLM</strong> on your machine —
         uncensored models, full tool access, zero cloud inference. No refusals from a provider you don't control.
       </p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="#quickstart">Get started</a>
-        <a class="btn btn-secondary" href="https://github.com/DataKnifeAI/enodios">View on GitHub</a>
+        <a class="btn btn-secondary" href="https://github.com/DataKnifeAI/coldberth">View on GitHub</a>
         <a class="btn btn-secondary" href="#models">Freedom-first models</a>
       </div>
       <div class="hero-stats">
@@ -717,19 +717,19 @@
     </header>
 
     <section id="philosophy">
-      <div class="section-label">Why Enodios</div>
+      <div class="section-label">Why Coldberth</div>
       <h2>Complete control on your own metal</h2>
       <p class="section-intro">
         Cloud models come with alignment layers, usage policies, and refusals baked in.
-        Enodios is the opposite: a local inference stack where <em>you</em> decide what runs,
+        Coldberth is the opposite: a local inference stack where <em>you</em> decide what runs,
         what tools the agent gets, and which requests cross the boundary of your machine.
       </p>
 
       <div class="manifesto">
-        Hermes Agent is a harness — shell, files, browser, memory. Enodios feeds it models
+        Hermes Agent is a harness — shell, files, browser, memory. Coldberth feeds it models
         with minimal safety guardrails so nothing stands between you and your workflow.
         What happens on your system is your responsibility. That's the point.
-        <footer>— the Enodios philosophy</footer>
+        <footer>— the Coldberth philosophy</footer>
       </div>
 
       <div class="pillars" style="margin-top: 1.75rem">
@@ -751,7 +751,7 @@
         <div class="pillar">
           <div class="pillar-icon">🎛️</div>
           <h3>You set the limits</h3>
-          <p>Hermes permissions, sandboxing, and model choice are yours. Enodios doesn't phone home or enforce policy.</p>
+          <p>Hermes permissions, sandboxing, and model choice are yours. Coldberth doesn't phone home or enforce policy.</p>
         </div>
       </div>
     </section>
@@ -808,7 +808,7 @@
         <div class="model-card featured">
           <div>
             <h3>solidrust/Hermes-3-Llama-3.1-8B-AWQ</h3>
-            <p class="tagline">The Enodios default. Uncensored, fast tool calls, fits 24GB at 64k context.</p>
+            <p class="tagline">The Coldberth default. Uncensored, fast tool calls, fits 24GB at 64k context.</p>
             <div class="model-badges">
               <span class="badge badge-default">default</span>
               <span class="badge badge-free">uncensored</span>
@@ -881,8 +881,8 @@
       </div>
 
       <p style="margin-top: 1.25rem; font-size: 0.9rem; color: var(--dim)">
-        Run <code>enodios recommend</code> to detect your GPU and get tuned <code>ENODIOS_*</code> exports.
-        Swap models via <code>ENODIOS_MODEL</code> — any vLLM-compatible weights with Hermes tool support.
+        Run <code>coldberth recommend</code> to detect your GPU and get tuned <code>COLDBERTH_*</code> exports.
+        Swap models via <code>COLDBERTH_MODEL</code> — any vLLM-compatible weights with Hermes tool support.
       </p>
     </section>
 
@@ -893,8 +893,8 @@
         One machine runs vLLM on the GPU; another runs Hermes with tools — Hermes controlling Hermes over your LAN.
       </p>
       <div class="grid" style="margin-bottom: 1.25rem">
-        <div class="card"><strong>GPU host</strong><span><code>enodios start -b --lan</code><br><code>enodios urls</code></span></div>
-        <div class="card"><strong>Controller</strong><span><code>enodios configure --url http://&lt;gpu-host&gt;:8000/v1</code><br><code>hermes chat</code></span></div>
+        <div class="card"><strong>GPU host</strong><span><code>coldberth start -b --lan</code><br><code>coldberth urls</code></span></div>
+        <div class="card"><strong>Controller</strong><span><code>coldberth configure --url http://&lt;gpu-host&gt;:8000/v1</code><br><code>hermes chat</code></span></div>
       </div>
       <div class="arch-flow">
         <div class="arch-node">
@@ -931,12 +931,12 @@
       <h2>Orchestrator + sub-agents</h2>
       <p class="section-intro">
         One <strong>Hermes orchestrator</strong> plans work and delegates to many <strong>client Hermes</strong> agents —
-        each client runs scoped sub-tasks with its own tools while inference flows through Enodios vLLM on your GPU hosts.
+        each client runs scoped sub-tasks with its own tools while inference flows through Coldberth vLLM on your GPU hosts.
       </p>
       <div class="grid" style="margin-bottom: 1.25rem">
         <div class="card"><strong>Orchestrator</strong><span>Plans · delegates · merges results</span></div>
         <div class="card"><strong>Client Hermes</strong><span>One per repo, VM, or sandbox</span></div>
-        <div class="card"><strong>GPU host(s)</strong><span><code>enodios start -b --lan</code> per inference box</span></div>
+        <div class="card"><strong>GPU host(s)</strong><span><code>coldberth start -b --lan</code> per inference box</span></div>
       </div>
       <div class="arch-flow" style="flex-wrap: wrap; justify-content: center; gap: 0.5rem 0">
         <div class="arch-node">
@@ -973,7 +973,7 @@
         <div class="arch-node">
           <div class="label">LAN</div>
           <div class="name">:8000/v1</div>
-          <div class="detail">Enodios</div>
+          <div class="detail">Coldberth</div>
         </div>
         <div class="arch-arrow">→</div>
         <div class="arch-node highlight">
@@ -983,8 +983,8 @@
         </div>
       </div>
       <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--dim)">
-        Each client machine: <code>enodios configure --url http://&lt;gpu-host&gt;:8000/v1</code> then <code>hermes chat</code>.
-        <a href="https://github.com/DataKnifeAI/enodios/blob/main/docs/advanced.md#orchestrator--sub-agents">Full setup →</a>
+        Each client machine: <code>coldberth configure --url http://&lt;gpu-host&gt;:8000/v1</code> then <code>hermes chat</code>.
+        <a href="https://github.com/DataKnifeAI/coldberth/blob/main/docs/advanced.md#orchestrator--sub-agents">Full setup →</a>
       </p>
     </section>
 
@@ -993,21 +993,21 @@
       <h2>Quick start</h2>
       <ol class="steps">
         <li>
-          <strong>Install Enodios + vLLM</strong>
-          <pre>curl -fsSL https://raw.githubusercontent.com/DataKnifeAI/enodios/main/install.sh | bash
-enodios install</pre>
+          <strong>Install Coldberth + vLLM</strong>
+          <pre>curl -fsSL https://raw.githubusercontent.com/DataKnifeAI/coldberth/main/install.sh | bash
+coldberth install</pre>
         </li>
         <li>
           <strong>Detect GPU → get recommended settings</strong>
-          <pre>enodios recommend
-enodios recommend --apply
-source ~/.local/share/enodios/recommended.env</pre>
+          <pre>coldberth recommend
+coldberth recommend --apply
+source ~/.local/share/coldberth/recommended.env</pre>
         </li>
         <li>
           <strong>Start inference (background)</strong>
-          <pre>enodios start -b
-enodios status
-enodios bench</pre>
+          <pre>coldberth start -b
+coldberth status
+coldberth bench</pre>
         </li>
         <li>
           <strong>Install Hermes Agent</strong>
@@ -1027,13 +1027,13 @@ hermes chat</pre>
         </li>
         <li>
           <strong>Free the GPU (games / heavy tasks)</strong>
-          <pre>enodios stop    # or: enodios pause — releases ~20GB VRAM
+          <pre>coldberth stop    # or: coldberth pause — releases ~20GB VRAM
 # game, render, or other GPU work
-enodios start -b   # resume when done</pre>
+coldberth start -b   # resume when done</pre>
         </li>
       </ol>
       <p style="margin-top:1rem;font-size:0.9rem;color:var(--dim)">
-        Prefer automatic config? <code>enodios configure</code> writes the same endpoint to <code>~/.hermes/config.yaml</code>.
+        Prefer automatic config? <code>coldberth configure</code> writes the same endpoint to <code>~/.hermes/config.yaml</code>.
         vLLM holds most of your VRAM while running — stop it before other GPU-heavy apps.
       </p>
     </section>
@@ -1042,7 +1042,7 @@ enodios start -b   # resume when done</pre>
       <div class="section-label">Hermes Agent</div>
       <h2>Connect Hermes via CLI wizard</h2>
       <p class="section-intro">
-        Install <strong>Enodios and start vLLM first</strong>, then install Hermes and run <code>hermes setup</code> →
+        Install <strong>Coldberth and start vLLM first</strong>, then install Hermes and run <code>hermes setup</code> →
         <strong>Full setup</strong> → <strong>Inference Provider</strong> → <strong>Custom endpoint (enter URL manually)</strong>.
         Use <code>hermes setup model</code> or <code>hermes model</code> to change provider later — not <code>/model</code>
         inside chat (that only switches existing providers).
@@ -1056,20 +1056,20 @@ enodios start -b   # resume when done</pre>
 
       <div class="table-wrap" style="margin-bottom:1.25rem">
         <table>
-          <thead><tr><th>Prompt</th><th>Enodios value</th></tr></thead>
+          <thead><tr><th>Prompt</th><th>Coldberth value</th></tr></thead>
           <tbody>
             <tr><td>Provider</td><td><strong>Custom endpoint (enter URL manually)</strong></td></tr>
             <tr><td>Base URL</td><td><code>http://127.0.0.1:8000/v1</code></td></tr>
             <tr><td>API key</td><td>Leave empty (no auth on loopback)</td></tr>
             <tr><td>Model name</td><td><code>hermes3:8b</code> — served name, not the HuggingFace path</td></tr>
             <tr><td>Context length</td><td><code>65536</code> — Hermes agent minimum</td></tr>
-            <tr><td>Provider name</td><td><code>enodios</code> (optional named provider)</td></tr>
+            <tr><td>Provider name</td><td><code>coldberth</code> (optional named provider)</td></tr>
           </tbody>
         </table>
       </div>
 
-      <pre>enodios start -b          # vLLM must be running first
-enodios status            # confirm hermes3:8b
+      <pre>coldberth start -b          # vLLM must be running first
+coldberth status            # confirm hermes3:8b
 
 hermes setup              # Full setup → Inference Provider → Custom endpoint
 # or: hermes setup model
@@ -1078,15 +1078,15 @@ hermes config show
 hermes chat</pre>
 
       <p style="margin-top:1rem;color:var(--muted)">
-        <strong>Remote GPU host:</strong> run <code>enodios start -b --lan</code> on the inference box,
-        then <code>hermes setup model</code> on the controller with the <code>lan:</code> URL from <code>enodios urls</code>,
-        or <code>enodios configure --url http://&lt;gpu-host&gt;:8000/v1</code>.
+        <strong>Remote GPU host:</strong> run <code>coldberth start -b --lan</code> on the inference box,
+        then <code>hermes setup model</code> on the controller with the <code>lan:</code> URL from <code>coldberth urls</code>,
+        or <code>coldberth configure --url http://&lt;gpu-host&gt;:8000/v1</code>.
       </p>
 
-      <div class="warn-line" style="margin-top:1rem"><strong>Firewall</strong> <code>enodios start --lan</code> detects UFW/firewalld and prompts to allow TCP 8000 — or <code>enodios firewall --allow</code></div>
-      <div class="warn-line"><strong>Probe fails</strong> Wait for vLLM to finish loading — <code>tail -f ~/.local/share/enodios/vllm.log</code></div>
-      <div class="warn-line"><strong>No tool calls</strong> Run <code>enodios bench</code> first; model must be <code>hermes3:8b</code> with context <code>65536</code></div>
-      <div class="warn-line"><strong>Switch in chat</strong> <code>/model custom:enodios:hermes3:8b</code> after wizard setup</div>
+      <div class="warn-line" style="margin-top:1rem"><strong>Firewall</strong> <code>coldberth start --lan</code> detects UFW/firewalld and prompts to allow TCP 8000 — or <code>coldberth firewall --allow</code></div>
+      <div class="warn-line"><strong>Probe fails</strong> Wait for vLLM to finish loading — <code>tail -f ~/.local/share/coldberth/vllm.log</code></div>
+      <div class="warn-line"><strong>No tool calls</strong> Run <code>coldberth bench</code> first; model must be <code>hermes3:8b</code> with context <code>65536</code></div>
+      <div class="warn-line"><strong>Switch in chat</strong> <code>/model custom:coldberth:hermes3:8b</code> after wizard setup</div>
     </section>
 
     <section id="requirements">
@@ -1098,7 +1098,7 @@ hermes chat</pre>
         <div class="card"><strong>Driver</strong><span><code>nvidia-smi</code> working</span></div>
         <div class="card"><strong>Disk</strong><span>~15GB free</span></div>
         <div class="card"><strong>RAM</strong><span>16GB min, 32GB rec.</span></div>
-        <div class="card"><strong>Hermes Agent</strong><span>After Enodios — vLLM must be up for setup</span></div>
+        <div class="card"><strong>Hermes Agent</strong><span>After Coldberth — vLLM must be up for setup</span></div>
       </div>
       <div class="table-wrap" style="margin-top: 1.25rem">
         <table>
@@ -1123,22 +1123,22 @@ hermes chat</pre>
         <table>
           <thead><tr><th>Command</th><th>Description</th></tr></thead>
           <tbody>
-            <tr><td><code>enodios deps</code></td><td>Check / install OS GPU packages (curl, git, NVIDIA driver)</td></tr>
-            <tr><td><code>enodios install</code></td><td>Deps check + uv + vLLM venv + CLI link</td></tr>
-            <tr><td><code>enodios update</code></td><td>git pull + upgrade vLLM + refresh CLI</td></tr>
-            <tr><td><code>enodios recommend</code></td><td>GPU detect → model/settings for Hermes</td></tr>
-            <tr><td><code>enodios recommend --apply</code></td><td>Write <code>recommended.env</code></td></tr>
-            <tr><td><code>enodios start</code></td><td>Foreground vLLM on loopback</td></tr>
-            <tr><td><code>enodios start -b</code></td><td>Background; log + PID file</td></tr>
-            <tr><td><code>enodios start --lan</code></td><td>Expose vLLM on LAN; prompts firewall allow</td></tr>
-            <tr><td><code>enodios firewall</code></td><td>Check / allow TCP port for remote Hermes</td></tr>
-            <tr><td><code>enodios urls</code></td><td>Print local + LAN API URLs</td></tr>
-            <tr><td><code>enodios stop</code> / <code>pause</code></td><td>Stop vLLM — free GPU for games and other tasks</td></tr>
-            <tr><td><code>enodios doctor</code></td><td>GPU / CUDA / health checks</td></tr>
-            <tr><td><code>enodios bench</code></td><td>Tool-call smoke test</td></tr>
-            <tr><td><code>enodios configure</code></td><td>Wire Hermes to local vLLM</td></tr>
-            <tr><td><code>enodios configure --url URL</code></td><td>Wire Hermes to remote vLLM</td></tr>
-            <tr><td><code>enodios status</code></td><td>URLs + <code>/v1/models</code></td></tr>
+            <tr><td><code>coldberth deps</code></td><td>Check / install OS GPU packages (curl, git, NVIDIA driver)</td></tr>
+            <tr><td><code>coldberth install</code></td><td>Deps check + uv + vLLM venv + CLI link</td></tr>
+            <tr><td><code>coldberth update</code></td><td>git pull + upgrade vLLM + refresh CLI</td></tr>
+            <tr><td><code>coldberth recommend</code></td><td>GPU detect → model/settings for Hermes</td></tr>
+            <tr><td><code>coldberth recommend --apply</code></td><td>Write <code>recommended.env</code></td></tr>
+            <tr><td><code>coldberth start</code></td><td>Foreground vLLM on loopback</td></tr>
+            <tr><td><code>coldberth start -b</code></td><td>Background; log + PID file</td></tr>
+            <tr><td><code>coldberth start --lan</code></td><td>Expose vLLM on LAN; prompts firewall allow</td></tr>
+            <tr><td><code>coldberth firewall</code></td><td>Check / allow TCP port for remote Hermes</td></tr>
+            <tr><td><code>coldberth urls</code></td><td>Print local + LAN API URLs</td></tr>
+            <tr><td><code>coldberth stop</code> / <code>pause</code></td><td>Stop vLLM — free GPU for games and other tasks</td></tr>
+            <tr><td><code>coldberth doctor</code></td><td>GPU / CUDA / health checks</td></tr>
+            <tr><td><code>coldberth bench</code></td><td>Tool-call smoke test</td></tr>
+            <tr><td><code>coldberth configure</code></td><td>Wire Hermes to local vLLM</td></tr>
+            <tr><td><code>coldberth configure --url URL</code></td><td>Wire Hermes to remote vLLM</td></tr>
+            <tr><td><code>coldberth status</code></td><td>URLs + <code>/v1/models</code></td></tr>
           </tbody>
         </table>
       </div>
@@ -1147,19 +1147,19 @@ hermes chat</pre>
     <section id="troubleshooting">
       <div class="section-label">Ops</div>
       <h2>Troubleshooting</h2>
-      <div class="warn-line"><strong>Gaming / heavy GPU</strong> <code>enodios stop</code> before launching — default 64k uses ~20GB VRAM. Resume with <code>enodios start -b</code>.</div>
-      <div class="warn-line"><strong>VRAM full</strong> <code>enodios stop</code> first, close other GPU apps, or <code>export ENODIOS_GPU_UTIL=0.65</code> — run <code>enodios recommend</code>.</div>
-      <div class="warn-line"><strong>Port busy</strong> <code>export ENODIOS_PORT=8001</code> then <code>enodios configure</code>.</div>
-      <div class="warn-line"><strong>Remote Hermes</strong> GPU host: <code>enodios start -b --lan</code> (prompts firewall) + <code>enodios urls</code>; controller: <code>configure --url http://&lt;gpu-host&gt;:8000/v1</code></div>
-      <div class="warn-line"><strong>Background start failed</strong> <code>tail -f ~/.local/share/enodios/vllm.log</code></div>
+      <div class="warn-line"><strong>Gaming / heavy GPU</strong> <code>coldberth stop</code> before launching — default 64k uses ~20GB VRAM. Resume with <code>coldberth start -b</code>.</div>
+      <div class="warn-line"><strong>VRAM full</strong> <code>coldberth stop</code> first, close other GPU apps, or <code>export COLDBERTH_GPU_UTIL=0.65</code> — run <code>coldberth recommend</code>.</div>
+      <div class="warn-line"><strong>Port busy</strong> <code>export COLDBERTH_PORT=8001</code> then <code>coldberth configure</code>.</div>
+      <div class="warn-line"><strong>Remote Hermes</strong> GPU host: <code>coldberth start -b --lan</code> (prompts firewall) + <code>coldberth urls</code>; controller: <code>configure --url http://&lt;gpu-host&gt;:8000/v1</code></div>
+      <div class="warn-line"><strong>Background start failed</strong> <code>tail -f ~/.local/share/coldberth/vllm.log</code></div>
       <div class="warn-line"><strong>No nvcc</strong> Fine — PyTorch sampler fallback works. CUDA toolkit is optional speedup.</div>
-      <div class="warn-line"><strong>Docker CUDA errors</strong> Use native Enodios (host vLLM). Avoids <code>CUDA_ERROR_UNKNOWN</code> in containers.</div>
+      <div class="warn-line"><strong>Docker CUDA errors</strong> Use native Coldberth (host vLLM). Avoids <code>CUDA_ERROR_UNKNOWN</code> in containers.</div>
     </section>
 
     <footer class="site-footer">
       <div>
-        <p>MIT License · <a href="https://github.com/DataKnifeAI/enodios">github.com/DataKnifeAI/enodios</a> · <a href="https://github.com/DataKnifeAI/enodios/blob/main/docs/advanced.md">Advanced guide</a></p>
-        <p style="margin-top:0.35rem">Enodios (Ἐνόδιος): Hermes of roads and crossroads — the path between agent and GPU.</p>
+        <p>MIT License · <a href="https://github.com/DataKnifeAI/coldberth">github.com/DataKnifeAI/coldberth</a> · <a href="https://github.com/DataKnifeAI/coldberth/blob/main/docs/advanced.md">Advanced guide</a></p>
+        <p style="margin-top:0.35rem">Coldberth: Hermes of roads and crossroads — the path between agent and GPU.</p>
       </div>
       <div style="text-align:right">
         <p>Local inference. No cloud keys.</p>

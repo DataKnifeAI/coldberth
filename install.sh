@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Bootstrap enodios — clone or refresh, then run enodios install.
+# Bootstrap coldberth — clone or refresh, then run coldberth install.
 set -euo pipefail
 
-REPO="${ENODIOS_REPO:-https://github.com/DataKnifeAI/enodios.git}"
-DIR="${ENODIOS_DIR:-$HOME/.local/share/enodios/src}"
+REPO="${COLDBERTH_REPO:-https://github.com/DataKnifeAI/coldberth.git}"
+DIR="${COLDBERTH_DIR:-$HOME/.local/share/coldberth/src}"
 
 if [[ -d "$DIR/.git" ]]; then
   git -C "$DIR" pull --ff-only
@@ -12,4 +12,4 @@ else
   git clone "$REPO" "$DIR"
 fi
 
-exec "$DIR/bin/enodios" update
+exec "$DIR/bin/coldberth" update

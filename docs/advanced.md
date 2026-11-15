@@ -1,8 +1,8 @@
-# Enodios — Advanced setup & reference
+# Coldberth — Advanced setup & reference
 
 Full guide for Hermes wiring, distributed setups, tuning, and troubleshooting.
 
-**Docs site:** https://dataknifeai.github.io/enodios/  
+**Docs site:** https://dataknifeai.github.io/coldberth/  
 **Quick start:** [README](../README.md)
 
 ---
@@ -23,24 +23,24 @@ Full guide for Hermes wiring, distributed setups, tuning, and troubleshooting.
 | Requirement | Notes |
 |-------------|-------|
 | **Linux** | x86_64. Arch, Ubuntu, Fedora, etc. |
-| **NVIDIA driver** | `nvidia-smi` must work — `enodios deps` checks and can install |
-| **curl, git** | For bootstrap — installed by `enodios deps` if missing |
-| **Hermes Agent** | Install **after** Enodios — vLLM must be up before `hermes setup` |
-| **Python 3.14** | Installed via `uv` automatically (`ENODIOS_PYTHON` to override) |
+| **NVIDIA driver** | `nvidia-smi` must work — `coldberth deps` checks and can install |
+| **curl, git** | For bootstrap — installed by `coldberth deps` if missing |
+| **Hermes Agent** | Install **after** Coldberth — vLLM must be up before `hermes setup` |
+| **Python 3.14** | Installed via `uv` automatically (`COLDBERTH_PYTHON` to override) |
 | **CUDA toolkit** | Optional. Speeds up sampling; not required |
 
-### What Enodios installs
+### What Coldberth installs
 
 - [uv](https://github.com/astral-sh/uv) — Python environment manager
-- **vLLM** + PyTorch CUDA in `~/.local/share/enodios/.venv`
-- **`enodios` CLI** → `~/.local/bin/enodios`
+- **vLLM** + PyTorch CUDA in `~/.local/share/coldberth/.venv`
+- **`coldberth` CLI** → `~/.local/bin/coldberth`
 
 ### Network
 
 - **HuggingFace** for first model download (no token for public AWQ weights)
 - **No** ongoing cloud inference dependency
 
-### OS dependencies (`enodios deps`)
+### OS dependencies (`coldberth deps`)
 
 Checks and optionally installs:
 
@@ -49,12 +49,12 @@ Checks and optionally installs:
 - **Package managers:** `pacman`, `apt`, `dnf`, `yum`, `zypper` (auto-detected)
 
 ```bash
-enodios deps           # check + prompt to install
-enodios deps --check   # exit 1 if required deps missing
-enodios deps --install # install without prompting (sudo)
+coldberth deps           # check + prompt to install
+coldberth deps --check   # exit 1 if required deps missing
+coldberth deps --install # install without prompting (sudo)
 ```
 
-`enodios install` runs the same check first. Skip prompts: `ENODIOS_DEPS=skip`. Auto-install: `ENODIOS_DEPS=allow`.
+`coldberth install` runs the same check first. Skip prompts: `COLDBERTH_DEPS=skip`. Auto-install: `COLDBERTH_DEPS=allow`.
 
 NVIDIA driver install may require a **reboot** before `nvidia-smi` works.
 
@@ -62,14 +62,14 @@ NVIDIA driver install may require a **reboot** before `nvidia-smi` works.
 
 ## Connect Hermes via CLI wizard
 
-Install **Enodios and start vLLM first**, then install Hermes.
+Install **Coldberth and start vLLM first**, then install Hermes.
 
 ### Prerequisites
 
 ```bash
-enodios start -b
-enodios status    # should list hermes3:8b
-enodios bench     # tool-call smoke test
+coldberth start -b
+coldberth status    # should list hermes3:8b
+coldberth bench     # tool-call smoke test
 ```
 
 ```bash
@@ -110,7 +110,7 @@ hermes setup model
 | API key | Leave empty |
 | Model name | `hermes3:8b` |
 | Context length | `65536` |
-| Provider name | `enodios` (optional) |
+| Provider name | `coldberth` (optional) |
 
 Hermes may probe `/v1/models`. If vLLM is still loading, wait and re-run `hermes setup model`.
 
@@ -126,10 +126,10 @@ Expected config snippet:
 ```yaml
 model:
   default: hermes3:8b
-  provider: custom:enodios
+  provider: custom:coldberth
   context_length: 65536
 custom_providers:
-  - name: enodios
+  - name: coldberth
     base_url: http://127.0.0.1:8000/v1
     models:
       hermes3:8b:
@@ -139,31 +139,31 @@ custom_providers:
 In chat, switch provider:
 
 ```
-/model custom:enodios:hermes3:8b
+/model custom:coldberth:hermes3:8b
 ```
 
-### Wizard vs `enodios configure`
+### Wizard vs `coldberth configure`
 
 | Method | Best for |
 |--------|----------|
 | **`hermes setup`** (Full setup) | First install |
 | **`hermes setup model`** / **`hermes model`** | Reconfigure provider |
-| **`enodios configure`** | Quick local overwrite |
-| **`enodios configure --url`** | Remote GPU host on controller |
+| **`coldberth configure`** | Quick local overwrite |
+| **`coldberth configure --url`** | Remote GPU host on controller |
 
-`enodios configure` backs up `~/.hermes/config.yaml` before editing.
+`coldberth configure` backs up `~/.hermes/config.yaml` before editing.
 
 ### Wizard troubleshooting
 
 | Problem | Fix |
 |---------|-----|
-| Endpoint probe fails | `enodios status`; `tail -f ~/.local/share/enodios/vllm.log` |
+| Endpoint probe fails | `coldberth status`; `tail -f ~/.local/share/coldberth/vllm.log` |
 | Wrong model name | Use `hermes3:8b` |
 | Context too small | Set **65536** |
-| No tool calls | `enodios bench` must pass |
-| `/model` missing Enodios | Run `hermes setup model` first |
+| No tool calls | `coldberth bench` must pass |
+| `/model` missing Coldberth | Run `hermes setup model` first |
 | Picked Quick Setup | Re-run → Full setup → Custom |
-| Remote unreachable | `enodios start --lan` + `enodios firewall --allow` |
+| Remote unreachable | `coldberth start --lan` + `coldberth firewall --allow` |
 
 ---
 
@@ -174,8 +174,8 @@ vLLM on a GPU host; Hermes with tools on another machine (same LAN).
 **GPU host:**
 
 ```bash
-enodios start -b --lan
-enodios urls    # copy lan: URL
+coldberth start -b --lan
+coldberth urls    # copy lan: URL
 ```
 
 **Controller:**
@@ -186,19 +186,19 @@ hermes setup model
 # model: hermes3:8b  context: 65536
 
 # or:
-enodios configure --url http://<gpu-host>:8000/v1
+coldberth configure --url http://<gpu-host>:8000/v1
 hermes chat
 ```
 
 vLLM has **no API authentication**. Use `--lan` only on a trusted network.
 
-`enodios start --lan` detects UFW/firewalld and prompts to open TCP 8000. Or: `enodios firewall --allow`.
+`coldberth start --lan` detects UFW/firewalld and prompts to open TCP 8000. Or: `coldberth firewall --allow`.
 
 ---
 
 ## Orchestrator + sub-agents
 
-One **orchestrator** Hermes plans work and delegates **sub-agent** Hermes clients — each client runs scoped tools on its own machine while sharing Enodios vLLM endpoints.
+One **orchestrator** Hermes plans work and delegates **sub-agent** Hermes clients — each client runs scoped tools on its own machine while sharing Coldberth vLLM endpoints.
 
 ```mermaid
 flowchart TB
@@ -220,26 +220,26 @@ flowchart TB
 
 **Typical layout**
 
-| Role | Machine | Enodios |
+| Role | Machine | Coldberth |
 |------|---------|---------|
-| Orchestrator | Your laptop / controller | `enodios configure` → local or remote planner vLLM |
-| Client A, B, … | Per repo, VM, or teammate box | `enodios configure --url http://<gpu-host>:8000/v1` |
-| GPU host(s) | Inference server(s) | `enodios start -b --lan` on each |
+| Orchestrator | Your laptop / controller | `coldberth configure` → local or remote planner vLLM |
+| Client A, B, … | Per repo, VM, or teammate box | `coldberth configure --url http://<gpu-host>:8000/v1` |
+| GPU host(s) | Inference server(s) | `coldberth start -b --lan` on each |
 
-The orchestrator breaks goals into parallel sub-tasks; each client Hermes gets a narrow tool scope (one repo, one container, one directory tree). Clients can share one vLLM host or fan out across several Enodios instances on different GPUs.
+The orchestrator breaks goals into parallel sub-tasks; each client Hermes gets a narrow tool scope (one repo, one container, one directory tree). Clients can share one vLLM host or fan out across several Coldberth instances on different GPUs.
 
 **Setup sketch**
 
 ```bash
 # GPU host
-enodios start -b --lan && enodios urls
+coldberth start -b --lan && coldberth urls
 
 # Orchestrator machine
-enodios configure --url http://<gpu-host>:8000/v1
+coldberth configure --url http://<gpu-host>:8000/v1
 hermes chat   # plans and delegates
 
 # Each client machine (sub-agent)
-enodios configure --url http://<gpu-host>:8000/v1   # or a second GPU host
+coldberth configure --url http://<gpu-host>:8000/v1   # or a second GPU host
 hermes chat   # scoped tools for its sub-task
 ```
 
@@ -258,29 +258,29 @@ Use separate Hermes configs/providers per client if you want different `base_url
 | Context length | `65536` |
 | KV cache | `fp8` |
 | GPU memory cap | `75%` |
-| Venv | `~/.local/share/enodios/.venv` |
-| Log | `~/.local/share/enodios/vllm.log` |
+| Venv | `~/.local/share/coldberth/.venv` |
+| Log | `~/.local/share/coldberth/vllm.log` |
 
 ```bash
-export ENODIOS_PYTHON=3.14
-export ENODIOS_PORT=8000
-export ENODIOS_MODEL=solidrust/Hermes-3-Llama-3.1-8B-AWQ
-export ENODIOS_GPU_UTIL=0.85
-export ENODIOS_MAX_MODEL_LEN=65536
-export ENODIOS_KV_CACHE_DTYPE=fp8   # auto if quality issues
-export ENODIOS_VENV=$HOME/.local/share/enodios/.venv
-export ENODIOS_LOG=$HOME/.local/share/enodios/vllm.log
-export ENODIOS_UPDATE_CHECK=skip    # disable update notice on start
-export ENODIOS_FIREWALL=allow         # auto-open firewall on --lan
+export COLDBERTH_PYTHON=3.14
+export COLDBERTH_PORT=8000
+export COLDBERTH_MODEL=solidrust/Hermes-3-Llama-3.1-8B-AWQ
+export COLDBERTH_GPU_UTIL=0.85
+export COLDBERTH_MAX_MODEL_LEN=65536
+export COLDBERTH_KV_CACHE_DTYPE=fp8   # auto if quality issues
+export COLDBERTH_VENV=$HOME/.local/share/coldberth/.venv
+export COLDBERTH_LOG=$HOME/.local/share/coldberth/vllm.log
+export COLDBERTH_UPDATE_CHECK=skip    # disable update notice on start
+export COLDBERTH_FIREWALL=allow         # auto-open firewall on --lan
 ```
 
 ### Updates
 
 ```bash
-enodios update
+coldberth update
 ```
 
-Pulls git, upgrades vLLM, refreshes CLI. `enodios start` checks for updates every 6h (configurable via `ENODIOS_UPDATE_CHECK_INTERVAL`).
+Pulls git, upgrades vLLM, refreshes CLI. `coldberth start` checks for updates every 6h (configurable via `COLDBERTH_UPDATE_CHECK_INTERVAL`).
 
 ---
 
@@ -302,9 +302,9 @@ Aligned (censored) with strong tools: `nemotron-3-nano`, `qwen3.6` — run via O
 ### Gaming or heavy GPU apps
 
 ```bash
-enodios stop    # or: enodios pause — frees ~20GB VRAM
+coldberth stop    # or: coldberth pause — frees ~20GB VRAM
 # game / render / train
-enodios start -b
+coldberth start -b
 ```
 
 Hermes config is unchanged; only vLLM stops.
@@ -314,9 +314,9 @@ Hermes config is unchanged; only vLLM stops.
 64k uses **~20GB VRAM** on a 4090. Stop other GPU apps first:
 
 ```bash
-enodios stop
-export ENODIOS_GPU_UTIL=0.65
-enodios start -b
+coldberth stop
+export COLDBERTH_GPU_UTIL=0.65
+coldberth start -b
 ```
 
 ### `Could not find nvcc`
@@ -332,8 +332,8 @@ export PATH="$CUDA_HOME/bin:$PATH"
 ### vLLM not running
 
 ```bash
-enodios start -b
-tail -f ~/.local/share/enodios/vllm.log
+coldberth start -b
+tail -f ~/.local/share/coldberth/vllm.log
 ss -ltnp | grep 8000
 ```
 
@@ -341,21 +341,21 @@ ss -ltnp | grep 8000
 
 ```bash
 # GPU host
-enodios start -b --lan
-enodios firewall --allow
-enodios urls
+coldberth start -b --lan
+coldberth firewall --allow
+coldberth urls
 
 # controller
-enodios configure --url http://<gpu-host>:8000/v1
+coldberth configure --url http://<gpu-host>:8000/v1
 ```
 
 ### Hermes connects but no tool calls
 
-Enodios sets `--enable-auto-tool-choice --tool-call-parser hermes` automatically. Run `enodios bench`.
+Coldberth sets `--enable-auto-tool-choice --tool-call-parser hermes` automatically. Run `coldberth bench`.
 
 ### Docker vLLM `CUDA_ERROR_UNKNOWN`
 
-Use native Enodios (host vLLM), not Docker.
+Use native Coldberth (host vLLM), not Docker.
 
 ---
 
@@ -405,14 +405,14 @@ flowchart TB
 ## Development
 
 ```bash
-git clone https://github.com/DataKnifeAI/enodios.git
-cd enodios
-./bin/enodios install
-ln -sf "$(pwd)/bin/enodios" ~/.local/bin/enodios
+git clone https://github.com/DataKnifeAI/coldberth.git
+cd coldberth
+./bin/coldberth install
+ln -sf "$(pwd)/bin/coldberth" ~/.local/bin/coldberth
 ```
 
 ---
 
-## Why "Enodios"?
+## Why "Coldberth"?
 
-**Enodios** (Ἐνόδιος) — Greek epithet of Hermes, god of roads and crossroads. The local path between Hermes Agent and your GPU.
+**Coldberth** — a cold dock berth that warms when your GPU inference stack comes online. The local path between Hermes Agent and your hardware.

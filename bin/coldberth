@@ -1,32 +1,32 @@
 #!/usr/bin/env bash
-# Enodios — Hermes Agent + vLLM local stack (Ἐνόδιος: Hermes of the road).
+# Coldberth — Hermes Agent + vLLM local stack (a cold dock berth for local inference).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
-DATA="${ENODIOS_DATA:-$HOME/.local/share/enodios}"
-VENV="${ENODIOS_VENV:-$DATA/.venv}"
-PORT="${ENODIOS_PORT:-8000}"
-MODEL="${ENODIOS_MODEL:-solidrust/Hermes-3-Llama-3.1-8B-AWQ}"
-SERVED_NAME="${ENODIOS_SERVED_NAME:-hermes3:8b}"
-MAX_LEN="${ENODIOS_MAX_MODEL_LEN:-65536}"
-GPU_UTIL="${ENODIOS_GPU_UTIL:-0.75}"
-KV_CACHE_DTYPE="${ENODIOS_KV_CACHE_DTYPE:-fp8}"
-PROVIDER_NAME="${ENODIOS_PROVIDER:-enodios}"
+DATA="${COLDBERTH_DATA:-$HOME/.local/share/coldberth}"
+VENV="${COLDBERTH_VENV:-$DATA/.venv}"
+PORT="${COLDBERTH_PORT:-8000}"
+MODEL="${COLDBERTH_MODEL:-solidrust/Hermes-3-Llama-3.1-8B-AWQ}"
+SERVED_NAME="${COLDBERTH_SERVED_NAME:-hermes3:8b}"
+MAX_LEN="${COLDBERTH_MAX_MODEL_LEN:-65536}"
+GPU_UTIL="${COLDBERTH_GPU_UTIL:-0.75}"
+KV_CACHE_DTYPE="${COLDBERTH_KV_CACHE_DTYPE:-fp8}"
+PROVIDER_NAME="${COLDBERTH_PROVIDER:-coldberth}"
 HERMES_CONFIG="${HERMES_CONFIG:-$HOME/.hermes/config.yaml}"
-LOG_FILE="${ENODIOS_LOG:-$DATA/vllm.log}"
-PID_FILE="${ENODIOS_PID_FILE:-$DATA/vllm.pid}"
-PYTHON="${ENODIOS_PYTHON:-3.14}"
+LOG_FILE="${COLDBERTH_LOG:-$DATA/vllm.log}"
+PID_FILE="${COLDBERTH_PID_FILE:-$DATA/vllm.pid}"
+PYTHON="${COLDBERTH_PYTHON:-3.14}"
 
 usage() {
   cat <<EOF
-Enodios — local Hermes Agent + vLLM (Hermes of the road)
+Coldberth — local Hermes Agent + vLLM (cold dock berth for local inference)
 
-Usage: enodios <command>
+Usage: coldberth <command>
 
 Commands:
   deps        Check OS packages for GPU inference (curl, git, NVIDIA driver)
   install     Install uv venv + vLLM, link this CLI to ~/.local/bin
-  update      git pull enodios + upgrade vLLM + refresh CLI link
+  update      git pull coldberth + upgrade vLLM + refresh CLI link
   start       Run vLLM (foreground by default; -b/--background to detach)
   stop        Stop vLLM — free GPU VRAM for games / other tasks
   pause       Alias for stop
@@ -40,20 +40,20 @@ Commands:
   help        Show this help
 
 Environment:
-  ENODIOS_DIR     Git checkout for update (default: ~/.local/share/enodios/src)
-  ENODIOS_PYTHON   Python for vLLM venv (default: 3.14)
-  ENODIOS_DATA, ENODIOS_VENV, ENODIOS_PORT, ENODIOS_MODEL
-  ENODIOS_GPU_UTIL, ENODIOS_MAX_MODEL_LEN, ENODIOS_PROVIDER
-  ENODIOS_LOG, ENODIOS_PID_FILE
-  ENODIOS_FIREWALL=allow|skip  (non-interactive firewall prompt on start --lan)
-  ENODIOS_UPDATE_CHECK=skip    (disable update-available notice on start)
-  ENODIOS_UPDATE_CHECK_INTERVAL  Seconds between git fetches (default: 21600)
-  ENODIOS_DEPS=allow|skip      (non-interactive deps prompt on install)
+  COLDBERTH_DIR     Git checkout for update (default: ~/.local/share/coldberth/src)
+  COLDBERTH_PYTHON   Python for vLLM venv (default: 3.14)
+  COLDBERTH_DATA, COLDBERTH_VENV, COLDBERTH_PORT, COLDBERTH_MODEL
+  COLDBERTH_GPU_UTIL, COLDBERTH_MAX_MODEL_LEN, COLDBERTH_PROVIDER
+  COLDBERTH_LOG, COLDBERTH_PID_FILE
+  COLDBERTH_FIREWALL=allow|skip  (non-interactive firewall prompt on start --lan)
+  COLDBERTH_UPDATE_CHECK=skip    (disable update-available notice on start)
+  COLDBERTH_UPDATE_CHECK_INTERVAL  Seconds between git fetches (default: 21600)
+  COLDBERTH_DEPS=allow|skip      (non-interactive deps prompt on install)
 
   vLLM binds 127.0.0.1 by default; use "start --lan" to expose on the LAN (no API auth)
 
-Docs: https://dataknifeai.github.io/enodios/
-Repo: https://github.com/DataKnifeAI/enodios
+Docs: https://dataknifeai.github.io/coldberth/
+Repo: https://github.com/DataKnifeAI/coldberth
 EOF
 }
 
@@ -217,7 +217,7 @@ deps_nvidia_manual_hint() {
     dnf|yum) echo "Try: enable RPM Fusion, then sudo ${backend} install akmod-nvidia" ;;
     zypper) echo "Try: sudo zypper install nvidia-computeG06 nvidia-glG06" ;;
     pacman) echo "Try: sudo pacman -S nvidia-open-dkms nvidia-utils" ;;
-    *) echo "Install the NVIDIA proprietary driver, then re-run: enodios deps" ;;
+    *) echo "Install the NVIDIA proprietary driver, then re-run: coldberth deps" ;;
   esac
 }
 
@@ -306,7 +306,7 @@ deps_status() {
 
 deps_usage() {
   cat <<EOF
-Usage: enodios deps [--check|--install]
+Usage: coldberth deps [--check|--install]
 
   Check OS packages needed for NVIDIA GPU inference.
 
@@ -319,7 +319,7 @@ Usage: enodios deps [--check|--install]
   --install  Install missing packages without prompting (requires sudo)
 
   install runs this check and prompts automatically.
-  ENODIOS_DEPS=allow|skip  non-interactive install behavior
+  COLDBERTH_DEPS=allow|skip  non-interactive install behavior
 EOF
 }
 
@@ -349,13 +349,13 @@ maybe_ensure_os_deps() {
     install)
       ;;
     *)
-      if [[ "${ENODIOS_DEPS:-}" == skip ]]; then
-        echo "Required dependencies missing (ENODIOS_DEPS=skip)."
+      if [[ "${COLDBERTH_DEPS:-}" == skip ]]; then
+        echo "Required dependencies missing (COLDBERTH_DEPS=skip)."
         return 1
       fi
-      if [[ "${ENODIOS_DEPS:-}" != allow ]]; then
+      if [[ "${COLDBERTH_DEPS:-}" != allow ]]; then
         if [[ ! -t 0 ]]; then
-          echo "Required dependencies missing — run: enodios deps --install"
+          echo "Required dependencies missing — run: coldberth deps --install"
           return 1
         fi
       fi
@@ -366,12 +366,12 @@ maybe_ensure_os_deps() {
   [[ "$DEPS_MISSING_TOOLS" -eq 1 ]] && do_tools=1
   [[ "$DEPS_MISSING_NVIDIA" -eq 1 ]] && do_nvidia=1
 
-  if [[ "$mode" == prompt && "${ENODIOS_DEPS:-}" != allow ]]; then
+  if [[ "$mode" == prompt && "${COLDBERTH_DEPS:-}" != allow ]]; then
     if [[ "$do_tools" -eq 1 || "$do_nvidia" -eq 1 ]]; then
       local ans
       read -r -p "Install missing required OS packages? [Y/n]: " ans
       case "${ans,,}" in
-        n|no) echo "Skipped. Fix manually: enodios deps"; return 1 ;;
+        n|no) echo "Skipped. Fix manually: coldberth deps"; return 1 ;;
       esac
     fi
     if [[ "$DEPS_MISSING_CUDA" -eq 1 ]]; then
@@ -381,7 +381,7 @@ maybe_ensure_os_deps() {
         y|yes) do_cuda=1 ;;
       esac
     fi
-  elif [[ "$mode" == install || "${ENODIOS_DEPS:-}" == allow ]]; then
+  elif [[ "$mode" == install || "${COLDBERTH_DEPS:-}" == allow ]]; then
     :
   fi
 
@@ -397,7 +397,7 @@ maybe_ensure_os_deps() {
     echo ""
     echo "NOTE: NVIDIA driver install may require a reboot before nvidia-smi works."
     if ! nvidia_smi_ok; then
-      echo "Reboot, then run: enodios deps && enodios install"
+      echo "Reboot, then run: coldberth deps && coldberth install"
       return 1
     fi
   fi
@@ -446,16 +446,16 @@ ensure_uv() {
 link_cli() {
   local root="${1:-$ROOT}"
   mkdir -p "$HOME/.local/bin"
-  ln -sf "$root/bin/enodios" "$HOME/.local/bin/enodios"
-  echo "Linked: $HOME/.local/bin/enodios -> $root/bin/enodios"
+  ln -sf "$root/bin/coldberth" "$HOME/.local/bin/coldberth"
+  echo "Linked: $HOME/.local/bin/coldberth -> $root/bin/coldberth"
 }
 
-enodios_src_dir() {
-  if [[ -n "${ENODIOS_DIR:-}" ]] && [[ -d "${ENODIOS_DIR}/.git" ]]; then
-    echo "$(cd "${ENODIOS_DIR}" && pwd)"
+coldberth_src_dir() {
+  if [[ -n "${COLDBERTH_DIR:-}" ]] && [[ -d "${COLDBERTH_DIR}/.git" ]]; then
+    echo "$(cd "${COLDBERTH_DIR}" && pwd)"
     return 0
   fi
-  local default="$HOME/.local/share/enodios/src"
+  local default="$HOME/.local/share/coldberth/src"
   if [[ -d "$default/.git" ]]; then
     echo "$default"
     return 0
@@ -496,12 +496,12 @@ upgrade_vllm_venv() {
 
 update_usage() {
   cat <<EOF
-Usage: enodios update
+Usage: coldberth update
 
-  Pull latest enodios from git, refresh ~/.local/bin/enodios, upgrade vLLM in the venv.
+  Pull latest coldberth from git, refresh ~/.local/bin/coldberth, upgrade vLLM in the venv.
 
   Source checkout (first match):
-    \$ENODIOS_DIR, ~/.local/share/enodios/src, or this repo if run from a git clone.
+    \$COLDBERTH_DIR, ~/.local/share/coldberth/src, or this repo if run from a git clone.
 
   Bootstrap (clone + update): curl -fsSL .../install.sh | bash
 EOF
@@ -516,15 +516,15 @@ cmd_update_venv() {
     rev="$(git -C "$src" rev-parse --short HEAD 2>/dev/null || echo unknown)"
   fi
   echo ""
-  echo "Updated enodios @ ${rev}"
+  echo "Updated coldberth @ ${rev}"
   if vllm_ready; then
-    echo "vLLM is still running on the old build — restart: enodios stop && enodios start -b"
+    echo "vLLM is still running on the old build — restart: coldberth stop && coldberth start -b"
   else
-    echo "Next: enodios start -b"
+    echo "Next: coldberth start -b"
   fi
 }
 
-enodios_upstream_ref() {
+coldberth_upstream_ref() {
   local src="$1"
   local branch upstream
   branch="$(git -C "$src" rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
@@ -533,10 +533,10 @@ enodios_upstream_ref() {
   echo "$upstream"
 }
 
-enodios_behind_upstream() {
+coldberth_behind_upstream() {
   local src="$1"
   local upstream local_rev remote_rev
-  upstream="$(enodios_upstream_ref "$src")" || return 1
+  upstream="$(coldberth_upstream_ref "$src")" || return 1
   remote_rev="$(git -C "$src" rev-parse "$upstream" 2>/dev/null)" || return 1
   local_rev="$(git -C "$src" rev-parse HEAD 2>/dev/null)" || return 1
   [[ "$local_rev" == "$remote_rev" ]] && return 1
@@ -544,16 +544,16 @@ enodios_behind_upstream() {
 }
 
 maybe_notify_update_available() {
-  [[ "${ENODIOS_UPDATE_CHECK:-}" != skip ]] || return 0
+  [[ "${COLDBERTH_UPDATE_CHECK:-}" != skip ]] || return 0
   local src
-  if ! src="$(enodios_src_dir)"; then
+  if ! src="$(coldberth_src_dir)"; then
     return 0
   fi
 
   local stamp_file="$DATA/last-update-check"
   local now interval last_fetch=0
   now="$(date +%s)"
-  interval="${ENODIOS_UPDATE_CHECK_INTERVAL:-21600}"
+  interval="${COLDBERTH_UPDATE_CHECK_INTERVAL:-21600}"
   [[ -f "$stamp_file" ]] && last_fetch="$(cat "$stamp_file" 2>/dev/null || echo 0)"
 
   if (( now - last_fetch >= interval )); then
@@ -562,28 +562,28 @@ maybe_notify_update_available() {
     fi
   fi
 
-  if ! enodios_behind_upstream "$src"; then
+  if ! coldberth_behind_upstream "$src"; then
     return 0
   fi
 
   local upstream local_short remote_short
-  upstream="$(enodios_upstream_ref "$src")"
+  upstream="$(coldberth_upstream_ref "$src")"
   local_short="$(git -C "$src" rev-parse --short HEAD 2>/dev/null || echo unknown)"
   remote_short="$(git -C "$src" rev-parse --short "$upstream" 2>/dev/null || echo unknown)"
-  echo "NOTE: enodios update available (${local_short} -> ${remote_short}). Run: enodios update"
+  echo "NOTE: coldberth update available (${local_short} -> ${remote_short}). Run: coldberth update"
 }
 
 cmd_update() {
   require_linux
   local src
-  if ! src="$(enodios_src_dir)"; then
-    echo "ERROR: no enodios git checkout found."
+  if ! src="$(coldberth_src_dir)"; then
+    echo "ERROR: no coldberth git checkout found."
     echo "Install first:"
-    echo "  curl -fsSL https://raw.githubusercontent.com/DataKnifeAI/enodios/main/install.sh | bash"
+    echo "  curl -fsSL https://raw.githubusercontent.com/DataKnifeAI/coldberth/main/install.sh | bash"
     exit 1
   fi
 
-  echo "== Update enodios =="
+  echo "== Update coldberth =="
   echo "source: $src"
   if vllm_ready; then
     echo "note:  vLLM is running — plan to restart after update"
@@ -593,7 +593,7 @@ cmd_update() {
   git -C "$src" pull --ff-only
   date +%s >"$DATA/last-update-check"
   echo ""
-  exec "$src/bin/enodios" _update_venv "$src"
+  exec "$src/bin/coldberth" _update_venv "$src"
 }
 
 cmd_install() {
@@ -601,8 +601,8 @@ cmd_install() {
   maybe_ensure_os_deps prompt || {
     echo ""
     echo "ERROR: required OS dependencies missing."
-    echo "  enodios deps"
-    echo "  enodios deps --install"
+    echo "  coldberth deps"
+    echo "  coldberth deps --install"
     exit 1
   }
   echo ""
@@ -614,7 +614,7 @@ cmd_install() {
   if [[ -d /opt/cuda/bin ]] && ! grep -q 'CUDA_HOME=/opt/cuda' "$HOME/.bashrc" 2>/dev/null; then
     cat >> "$HOME/.bashrc" <<'EOF'
 
-# enodios: CUDA toolkit for FlashInfer JIT (optional)
+# coldberth: CUDA toolkit for FlashInfer JIT (optional)
 export CUDA_HOME=/opt/cuda
 export PATH="$CUDA_HOME/bin:$PATH"
 EOF
@@ -622,16 +622,16 @@ EOF
   fi
   echo ""
   echo "Done. Next:"
-  echo "  enodios recommend  # GPU → model/settings for Hermes Agent"
-  echo "  enodios doctor"
-  echo "  enodios start -b   # background (or foreground in another terminal)"
-  echo "  # install Hermes Agent, then enodios configure or hermes setup"
+  echo "  coldberth recommend  # GPU → model/settings for Hermes Agent"
+  echo "  coldberth doctor"
+  echo "  coldberth start -b   # background (or foreground in another terminal)"
+  echo "  # install Hermes Agent, then coldberth configure or hermes setup"
   echo "  hermes chat"
 }
 
 require_venv() {
   if [[ ! -x "$VENV/bin/vllm" ]]; then
-    echo "ERROR: vLLM not installed. Run: enodios install"
+    echo "ERROR: vLLM not installed. Run: coldberth install"
     exit 1
   fi
 }
@@ -669,21 +669,21 @@ vllm_lan_bound() {
 
 start_usage() {
   cat <<EOF
-Usage: enodios start [-b|--background] [-l|--lan] [--no-firewall]
+Usage: coldberth start [-b|--background] [-l|--lan] [--no-firewall]
 
   (default)   Bind 127.0.0.1 only (local Hermes on this machine)
   -l, --lan   Bind 0.0.0.0 — expose vLLM on the LAN for remote Hermes agents
-  -b, --background   Detach; logs to \$ENODIOS_LOG (default: $LOG_FILE)
-  --no-firewall   Skip firewall detect/prompt (also: ENODIOS_FIREWALL=skip)
+  -b, --background   Detach; logs to \$COLDBERTH_LOG (default: $LOG_FILE)
+  --no-firewall   Skip firewall detect/prompt (also: COLDBERTH_FIREWALL=skip)
 
-  Distributed Hermes: GPU host runs "enodios start -b --lan"; controller runs
-  "enodios configure --url http://<gpu-host>:${PORT}/v1"
+  Distributed Hermes: GPU host runs "coldberth start -b --lan"; controller runs
+  "coldberth configure --url http://<gpu-host>:${PORT}/v1"
 EOF
 }
 
 configure_usage() {
   cat <<EOF
-Usage: enodios configure [--url BASE_URL] [--lan]
+Usage: coldberth configure [--url BASE_URL] [--lan]
 
   (default)   http://127.0.0.1:${PORT}/v1 — Hermes on the same machine as vLLM
   --url URL   Custom OpenAI base URL (remote GPU / Hermes-controlling-Hermes)
@@ -773,9 +773,9 @@ firewall_allow_lan_port() {
   case "$backend" in
     ufw)
       if [[ -n "$subnet" ]]; then
-        sudo ufw allow from "$subnet" to any port "$port" proto tcp comment 'enodios vLLM'
+        sudo ufw allow from "$subnet" to any port "$port" proto tcp comment 'coldberth vLLM'
       else
-        sudo ufw allow "${port}/tcp" comment 'enodios vLLM'
+        sudo ufw allow "${port}/tcp" comment 'coldberth vLLM'
       fi
       ;;
     firewalld)
@@ -836,17 +836,17 @@ maybe_ensure_firewall_lan() {
       ;;
   esac
 
-  if [[ "${ENODIOS_FIREWALL:-}" == skip ]]; then
-    echo "Skipped (ENODIOS_FIREWALL=skip). Run: enodios firewall --allow"
+  if [[ "${COLDBERTH_FIREWALL:-}" == skip ]]; then
+    echo "Skipped (COLDBERTH_FIREWALL=skip). Run: coldberth firewall --allow"
     return 1
   fi
-  if [[ "${ENODIOS_FIREWALL:-}" == allow ]]; then
+  if [[ "${COLDBERTH_FIREWALL:-}" == allow ]]; then
     firewall_allow_lan_port "$backend" "$PORT" "$subnet"
     echo "Firewall updated."
     return 0
   fi
   if [[ ! -t 0 ]]; then
-    echo "Non-interactive shell — run: enodios firewall --allow"
+    echo "Non-interactive shell — run: coldberth firewall --allow"
     return 1
   fi
 
@@ -854,7 +854,7 @@ maybe_ensure_firewall_lan() {
   read -r -p "Allow LAN access on port ${PORT}? [Y/n]: " ans
   case "${ans,,}" in
     n|no)
-      echo "Skipped. Remote clients may be unreachable until you run: enodios firewall --allow"
+      echo "Skipped. Remote clients may be unreachable until you run: coldberth firewall --allow"
       return 1
       ;;
     *)
@@ -867,7 +867,7 @@ maybe_ensure_firewall_lan() {
 
 firewall_usage() {
   cat <<EOF
-Usage: enodios firewall [--check|--allow]
+Usage: coldberth firewall [--check|--allow]
 
   Check whether the host firewall allows remote access to vLLM on port ${PORT}.
   With --lan / distributed Hermes, remote clients need TCP ${PORT} open.
@@ -914,7 +914,7 @@ cmd_start() {
       *) echo "Unknown option: $1"; start_usage; exit 1 ;;
     esac
   done
-  [[ "$skip_firewall" -eq 0 ]] || export ENODIOS_FIREWALL=skip
+  [[ "$skip_firewall" -eq 0 ]] || export COLDBERTH_FIREWALL=skip
   maybe_notify_update_available || true
 
   if vllm_ready; then
@@ -976,7 +976,7 @@ cmd_start() {
         local lan
         lan="$(vllm_lan_base)"
         [[ -n "$lan" ]] && echo "LAN:   ${lan}"
-        echo "Remote Hermes: enodios configure --url ${lan:-http://<this-host>:${PORT}/v1}"
+        echo "Remote Hermes: coldberth configure --url ${lan:-http://<this-host>:${PORT}/v1}"
         firewall_status_line || true
       fi
       return 0
@@ -1026,7 +1026,7 @@ cmd_stop() {
     echo "vLLM not running (port ${PORT} down)"
   fi
   gpu_vram_summary || true
-  echo "Resume inference: enodios start -b"
+  echo "Resume inference: coldberth start -b"
 }
 
 cmd_recommend() {
@@ -1034,7 +1034,7 @@ cmd_recommend() {
 import json, os, shutil, subprocess, sys
 
 HERMES_MIN_CTX = 65536
-DATA = os.path.expanduser(os.environ.get("ENODIOS_DATA", os.path.expanduser("~/.local/share/enodios")))
+DATA = os.path.expanduser(os.environ.get("COLDBERTH_DATA", os.path.expanduser("~/.local/share/coldberth")))
 
 def query_gpu():
     if not shutil.which("nvidia-smi"):
@@ -1162,7 +1162,7 @@ def pick_profile(total_mib, free_mib, shared_gpu):
         "tier": "24gb-class",
         "gpu_util": util,
         "feasible": free_mib >= 14000,
-        "summary": "24GB VRAM: ideal for Enodios defaults (fast uncensored Hermes agent).",
+        "summary": "24GB VRAM: ideal for Coldberth defaults (fast uncensored Hermes agent).",
         "notes": [
             "Measured ~20GB VRAM at 64k + fp8 KV on RTX 4090.",
         ],
@@ -1176,19 +1176,19 @@ def pick_profile(total_mib, free_mib, shared_gpu):
 
 def shell_exports(profile):
     lines = [
-        f'export ENODIOS_MODEL="{profile["model"]}"',
-        f'export ENODIOS_SERVED_NAME="{profile["served_name"]}"',
-        f'export ENODIOS_MAX_MODEL_LEN={profile["context_length"]}',
-        f'export ENODIOS_KV_CACHE_DTYPE={profile["kv_cache_dtype"]}',
+        f'export COLDBERTH_MODEL="{profile["model"]}"',
+        f'export COLDBERTH_SERVED_NAME="{profile["served_name"]}"',
+        f'export COLDBERTH_MAX_MODEL_LEN={profile["context_length"]}',
+        f'export COLDBERTH_KV_CACHE_DTYPE={profile["kv_cache_dtype"]}',
     ]
     if profile.get("gpu_util") is not None:
-        lines.append(f'export ENODIOS_GPU_UTIL={profile["gpu_util"]}')
+        lines.append(f'export COLDBERTH_GPU_UTIL={profile["gpu_util"]}')
     return lines
 
 def write_env_file(profile, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
-        f.write("# Generated by: enodios recommend --apply\n")
+        f.write("# Generated by: coldberth recommend --apply\n")
         for line in shell_exports(profile):
             f.write(line + "\n")
     return path
@@ -1227,8 +1227,8 @@ if shell_only:
 if apply:
     path = write_env_file(profile, os.path.join(DATA, "recommended.env"))
     print(f"Wrote {path}")
-    print("  source ~/.local/share/enodios/recommended.env")
-    print("  enodios start -b && enodios configure && hermes chat")
+    print("  source ~/.local/share/coldberth/recommended.env")
+    print("  coldberth start -b && coldberth configure && hermes chat")
 
 print("== GPU ==")
 print(f"device:     {gpu['name']} (cuda:{gpu['index']})")
@@ -1246,8 +1246,8 @@ print()
 print("== Hermes Agent requirements ==")
 print(f"  context_length >= {HERMES_MIN_CTX} (agent tool loops)")
 print("  model with native tool calling + hermes parser")
-print("  Hermes CLI: install after enodios start — hermes setup → Full setup → Custom")
-print("              (or: enodios configure)")
+print("  Hermes CLI: install after coldberth start — hermes setup → Full setup → Custom")
+print("              (or: coldberth configure)")
 print()
 
 print("== Recommendation ==")
@@ -1274,19 +1274,19 @@ if profile.get("alt_model"):
 print()
 
 print("== Apply settings ==")
-print("Copy/paste before enodios start:")
+print("Copy/paste before coldberth start:")
 print()
 for line in shell_exports(profile):
     print(line)
 print()
 print("Or persist:")
-print("  enodios recommend --apply")
-print("  source ~/.local/share/enodios/recommended.env")
+print("  coldberth recommend --apply")
+print("  source ~/.local/share/coldberth/recommended.env")
 print()
 print("Then:")
-print("  enodios install   # if not done")
-print("  enodios start -b")
-print("  # install Hermes Agent, then enodios configure or hermes setup")
+print("  coldberth install   # if not done")
+print("  coldberth start -b")
+print("  # install Hermes Agent, then coldberth configure or hermes setup")
 print("  hermes chat")
 
 sys.exit(0 if profile.get("feasible", True) else 2)
@@ -1295,18 +1295,18 @@ PY
 
 recommend_usage() {
   cat <<EOF
-Usage: enodios recommend [--shell|--json|--apply]
+Usage: coldberth recommend [--shell|--json|--apply]
 
   Detect GPU VRAM and suggest model/settings for Hermes Agent (64k context).
 
-  --shell   Print export commands only (eval: eval "\$(enodios recommend --shell)")
+  --shell   Print export commands only (eval: eval "\$(coldberth recommend --shell)")
   --json    Machine-readable output
-  --apply   Write ~/.local/share/enodios/recommended.env
+  --apply   Write ~/.local/share/coldberth/recommended.env
 EOF
 }
 
 cmd_doctor() {
-  echo "== enodios =="
+  echo "== coldberth =="
   echo "data:  $DATA"
   echo "venv:  $VENV"
   echo "port:  $PORT"
@@ -1315,7 +1315,7 @@ cmd_doctor() {
   echo ""
   echo "== GPU =="
   require_gpu || true
-  echo "Tip: enodios recommend — GPU-specific model/settings for Hermes Agent"
+  echo "Tip: coldberth recommend — GPU-specific model/settings for Hermes Agent"
   echo ""
   echo ""
   echo "== CUDA toolkit =="
@@ -1334,14 +1334,14 @@ cmd_doctor() {
     source "$VENV/bin/activate"
     python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available())"
   else
-    echo "MISSING: run enodios install"
+    echo "MISSING: run coldberth install"
   fi
   echo ""
   echo "== Hermes =="
   if command -v hermes &>/dev/null; then
     echo "OK: $(command -v hermes)"
   else
-    echo "hermes CLI not found — install after enodios start: https://github.com/NousResearch/hermes-agent"
+    echo "hermes CLI not found — install after coldberth start: https://github.com/NousResearch/hermes-agent"
   fi
   echo ""
   echo "== Endpoint =="
@@ -1355,7 +1355,7 @@ cmd_doctor() {
       firewall_status_line || maybe_ensure_firewall_lan prompt || true
     fi
   else
-    echo "vLLM not running on port ${PORT} (enodios start)"
+    echo "vLLM not running on port ${PORT} (coldberth start)"
   fi
   echo ""
   echo "== Firewall =="
@@ -1369,12 +1369,12 @@ cmd_urls() {
     lan="$(vllm_lan_base)"
     if [[ -n "$lan" ]]; then
       echo "lan:   ${lan}"
-      echo "remote hermes: enodios configure --url ${lan}"
+      echo "remote hermes: coldberth configure --url ${lan}"
     else
       echo "lan:   bound on 0.0.0.0 (could not detect LAN IP for --url)"
     fi
   else
-    echo "lan:   not exposed (default loopback — use: enodios start --lan)"
+    echo "lan:   not exposed (default loopback — use: coldberth start --lan)"
   fi
 }
 
